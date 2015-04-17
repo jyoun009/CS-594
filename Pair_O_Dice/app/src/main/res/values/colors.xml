@@ -1,0 +1,8 @@
+<resources>
+    <color name="button_normal">#005500</color>
+    <color name="button_pressed">#ff0000</color>
+    <color name="button_text">#ffffff</color>
+    <color name="player_1">#ff0000</color>
+    <color name="player_2">#0000ff</color>
+    <color name="background">#000000</color>
+</resources>
