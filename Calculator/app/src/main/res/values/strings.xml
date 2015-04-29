@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Calculator</string>
+    <string name="scientific_mode">Scientific</string>
+    <string name="title_activity_scientific">Scientific</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="basic_mode">Basic</string>
+</resources>
