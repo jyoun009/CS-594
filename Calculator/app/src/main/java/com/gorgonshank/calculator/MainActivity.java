@@ -37,7 +37,7 @@ public class MainActivity extends ActionBarActivity {
         calculator = (EditText) findViewById(R.id.calc_window);
         operation = (TextView) findViewById(R.id.operation_window);
 
-        //disableSoftInputFromAppearing(calculator);
+        disableSoftInputFromAppearing(calculator);
 
         try {
             Intent intent = getIntent();

@@ -1,8 +1,10 @@
 package com.gorgonshank.calculator;
 
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +36,8 @@ public class Scientific extends ActionBarActivity {
 
         calculator = (EditText) findViewById(R.id.calc_window);
         operation = (TextView) findViewById(R.id.operation_window);
+
+        disableSoftInputFromAppearing(calculator);
 
         try {
             Intent intent = getIntent();
@@ -310,6 +314,16 @@ public class Scientific extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_scientific, menu);
         return true;
+    }
+
+    public static void disableSoftInputFromAppearing(EditText editText) {
+        if (Build.VERSION.SDK_INT >= 11) {
+            editText.setRawInputType(InputType.TYPE_CLASS_TEXT);
+            editText.setTextIsSelectable(true);
+        } else {
+            editText.setRawInputType(InputType.TYPE_NULL);
+            editText.setFocusable(true);
+        }
     }
 
     @Override
