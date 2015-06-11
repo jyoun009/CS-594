@@ -1,4 +1,4 @@
-package com.gorgonshank.manyfragments;
+package com.gorgonshank.manyfragments.Main;
 
 import android.support.v4.view.ViewPager;
 import android.view.View;

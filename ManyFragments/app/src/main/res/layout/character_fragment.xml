@@ -18,19 +18,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/text_size"
-        android:text="HP: "
-        />
+        android:text="myHitPoints: "/>
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:id="@+id/characterPortrait"
-
-        />
+        android:id="@+id/characterPortrait"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/button"
-        android:text="Pass Data"
+        android:id="@+id/increase_hit_points_button"
+        android:text="+100 HP"
+        android:textSize="@dimen/text_size"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/decrease_hit_points_button"
+        android:text="-100 HP"
         android:textSize="@dimen/text_size"/>
 
 
