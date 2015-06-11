@@ -13,6 +13,14 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/item"
+        android:textSize="25sp"
+        android:text="Your item here."
+        />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -12,9 +12,9 @@ import android.util.Log;
 
 import com.gorgonshank.manyfragments.Data.CharacterData;
 import com.gorgonshank.manyfragments.Fragments.BarcodeFragment;
+import com.gorgonshank.manyfragments.Fragments.CharacterEquipmentFragment;
 import com.gorgonshank.manyfragments.Fragments.CharacterFragment;
-import com.gorgonshank.manyfragments.Fragments.FirstFragment;
-import com.gorgonshank.manyfragments.Fragments.SecondFragment;
+import com.gorgonshank.manyfragments.Fragments.EquippedFragment;
 import com.gorgonshank.manyfragments.Fragments.ThirdFragment;
 import com.gorgonshank.manyfragments.JSON.JSONReader;
 import com.gorgonshank.manyfragments.JSON.JSONWriter;
@@ -32,7 +32,10 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        if(!SpriteGenerator.hasLoaded){
+            SpriteGenerator.initDrawables(this.getResources(), 200, 200);
+            SpriteGenerator.hasLoaded = true;
+        }
         //initializeCharacterData();
 
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
@@ -55,8 +58,8 @@ public class MainActivity extends FragmentActivity {
         JSONObject JSON = JSONReader.getMyObject();
 
         // Set Static Class Data Here
-        long hp = (Long) JSON.get("myHitPoints");
-        CharacterData.setMyHitPoints(hp);
+        long hp = (Long) JSON.get("hit_points");
+        CharacterData.setHit_points(hp);
     }
 
     public void playSound(String fileName) {
@@ -100,10 +103,10 @@ public class MainActivity extends FragmentActivity {
     private class MyPagerAdapter extends FragmentPagerAdapter {
 
         // Set titles for tabs
-        private String tabtitles[] = new String[] {"Character Screen 1", "Barcode"};
+        private String tabtitles[] = new String[] {"Character Screen", "Fight Here! :)", "Character Current Equipment", "Equip Here"};
 
         // If you add a new tab, must change this variable
-        private static final int NUMBER_OF_TABS = 2;
+        private static final int NUMBER_OF_TABS = 4;
 
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -115,6 +118,9 @@ public class MainActivity extends FragmentActivity {
             switch(pos) {
                 case 0: return CharacterFragment.newInstance("Character Fragment1");
                 case 1: return BarcodeFragment.newInstance("BarcodeFragment");
+                case 2: return CharacterEquipmentFragment.newInstance("Character Equipment");
+                case 3: return EquippedFragment.newInstance("Equipped Fragment");
+
 
                 default: return ThirdFragment.newInstance("ThirdFragment, Default");
             }

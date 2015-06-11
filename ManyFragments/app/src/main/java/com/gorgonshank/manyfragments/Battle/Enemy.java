@@ -25,8 +25,8 @@ public class Enemy {
     }
 
     public Enemy(int modifier) {
-        long minimum = 50 * modifier;
-        long maximum = 100 * modifier;
+        long minimum = 75 * modifier;
+        long maximum = 150 * modifier;
 
         this.hp = 1000 * modifier;
         this.maxHP = this.hp;

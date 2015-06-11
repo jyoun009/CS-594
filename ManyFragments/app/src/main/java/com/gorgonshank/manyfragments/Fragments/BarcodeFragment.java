@@ -16,7 +16,9 @@ import android.widget.TextView;
 
 import com.gorgonshank.manyfragments.Main.BarcodeActivity;
 import com.gorgonshank.manyfragments.Main.BattleActivity;
+import com.gorgonshank.manyfragments.Main.SpriteGenerator;
 import com.gorgonshank.manyfragments.R;
+import com.gorgonshank.manyfragments.Sprite.Sprite;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ public class BarcodeFragment extends Fragment {
 
     ImageView canvas;
     Button scanButton;
+    TextView item_textview;
     ArrayList<Drawable> drawables = new ArrayList<Drawable>();
     int drawableWidth = 200;
     int drawableHeight = 200;
@@ -48,17 +51,21 @@ public class BarcodeFragment extends Fragment {
             }
         });
 
+        item_textview = (TextView)v.findViewById(R.id.item);
+
         Intent bcActivity = getActivity().getIntent();
         String barcode = bcActivity.getStringExtra("barcode");
         if(barcode != null){
             Log.i("Info", "Barcode is " + barcode);
             BigInteger bigBarcode = new BigInteger(barcode);
-            int index = Math.abs(bigBarcode.intValue() % drawables.size());
-            canvas.setImageDrawable(drawables.get(index));
+            Sprite stuff = SpriteGenerator.generateSprite(bigBarcode.intValue());
+            canvas.setImageDrawable(stuff.getDrawable());
+            item_textview.setText(stuff.toString());
 
             // This is the condition where we determine which method to send it to
             if(true) {
                 Intent intent = new Intent(getActivity(), BattleActivity.class);
+                intent.putExtra("barcode", barcode);
                 startActivity(intent);
                 getActivity().finish();
             }
@@ -67,7 +74,19 @@ public class BarcodeFragment extends Fragment {
             Log.i("Info", "Barcode is null");
         }
 
-        Long loot = bcActivity.getLongExtra("loot", 100l);
+        String passed_barcode = bcActivity.getStringExtra("passed_barcode");
+
+        if(passed_barcode != null){
+            BigInteger bigBarcode = new BigInteger(passed_barcode);
+            Sprite stuff = SpriteGenerator.generateSprite(bigBarcode.intValue());
+            canvas.setImageDrawable(stuff.getDrawable());
+            item_textview.setText(stuff.toString());
+        }
+        else{
+            Log.i("Info", "passed_barcode is null");
+        }
+
+        /*Long loot = bcActivity.getLongExtra("loot", 100l);
 
         if(loot != 100l && loot != null){
             Log.i("Info", "loot is " + loot);
@@ -77,7 +96,7 @@ public class BarcodeFragment extends Fragment {
         }
         else{
             Log.i("Info", "Loot is null");
-        }
+        }*/
 
 
 

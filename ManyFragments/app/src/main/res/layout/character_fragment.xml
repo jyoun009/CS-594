@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/text_size"
-        android:text="myHitPoints: "/>
+        android:text="HP: "/>
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/increase_hit_points_button"
-        android:text="+100 HP"
+        android:text="+500 HP"
         android:textSize="@dimen/text_size"/>
     <Button
         android:layout_width="wrap_content"
@@ -36,6 +36,12 @@
         android:text="-100 HP"
         android:textSize="@dimen/text_size"/>
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sound?"
+        android:id="@+id/checkBox"
+        android:layout_gravity="center_horizontal" />
 
 
 </LinearLayout>

@@ -46,7 +46,7 @@
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="200dp"
+        android:layout_height="170dp"
         android:orientation="horizontal"
         android:background="@drawable/custom_border">
         <ScrollView
@@ -59,18 +59,29 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:id="@+id/combat_text"
-                android:text="Combat Log:"
+                android:text="===========\nCombat Log:\n===========\n"
                 android:background="#ff0000ff"
-                android:textColor="#ffffffff"/>
+                android:textColor="#ffffffff"
+                android:gravity="bottom"/>
         </ScrollView>
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:gravity="center_horizontal"
+        android:id="@+id/skill_text"
+        android:text="Skill Points: 10 / 20"/>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/custom_border"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:id="@+id/commands"
+        android:layout_weight="2">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
@@ -104,11 +115,11 @@
             android:background="#ff0000ff">
 
             <Button
-                android:id="@+id/item_button"
+                android:id="@+id/special_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Item" />
+                android:text="Special" />
             <Button
                 android:id="@+id/run_button"
                 android:layout_width="fill_parent"
@@ -118,4 +129,65 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/custom_border"
+        android:orientation="vertical"
+        android:id="@+id/special"
+        android:visibility="gone">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:background="#ff0000ff">
+
+            <Button
+                android:id="@+id/Pierce"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Pierce" />
+            <Button
+                android:id="@+id/charge"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Charge" />
+
+        </LinearLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:background="#ff0000ff">
+
+            <Button
+                android:id="@+id/super_combo"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Super Combo" />
+            <Button
+                android:id="@+id/back"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Go Back" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+
+
+
 </LinearLayout>

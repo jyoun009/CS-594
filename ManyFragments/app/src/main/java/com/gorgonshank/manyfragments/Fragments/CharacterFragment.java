@@ -1,16 +1,22 @@
 package com.gorgonshank.manyfragments.Fragments;
 
+import android.content.res.AssetFileDescriptor;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gorgonshank.manyfragments.Data.CharacterData;
 import com.gorgonshank.manyfragments.R;
+
+import java.io.IOException;
 
 public class CharacterFragment extends Fragment implements Hideable {
 
@@ -18,6 +24,8 @@ public class CharacterFragment extends Fragment implements Hideable {
 
     private TextView characterName, characterHP;
     private ImageView characterPortrait;
+    private MediaPlayer mp;
+    private CheckBox check;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -28,7 +36,7 @@ public class CharacterFragment extends Fragment implements Hideable {
         characterName.append(cName);
 
         characterHP = (TextView) v.findViewById(R.id.characterHP);
-        String cHP = CharacterData.getMyHitPoints() + "/" + CharacterData.getMyMaxHitPoints();
+        String cHP = CharacterData.getHit_points() + "/" + CharacterData.getMax_hit_points();
         characterHP.append(cHP);
 
         characterPortrait = (ImageView) v.findViewById(R.id.characterPortrait);
@@ -38,17 +46,20 @@ public class CharacterFragment extends Fragment implements Hideable {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long tempHP = CharacterData.getMyHitPoints();
-                tempHP +=100;
+                long tempHP = CharacterData.getHit_points();
+                tempHP +=500;
 
-                if(tempHP > CharacterData.getMyMaxHitPoints()) {
-                    tempHP = CharacterData.getMyMaxHitPoints();
+                if(tempHP > CharacterData.getMax_hit_points()) {
+                    tempHP = CharacterData.getMax_hit_points();
                 } else if(tempHP < 0) {
                     tempHP = 0;
                 }
 
-                String text = "myHitPoints: " + tempHP + "/" + CharacterData.getMyMaxHitPoints();
-                CharacterData.setMyHitPoints(tempHP);
+                String text = "HP: " + tempHP + "/" + CharacterData.getMax_hit_points();
+
+                playSound("chaching.ogg");
+
+                CharacterData.setHit_points(tempHP);
                 characterHP.setText(text);
             }
         });
@@ -57,22 +68,61 @@ public class CharacterFragment extends Fragment implements Hideable {
         subtract.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long tempHP = CharacterData.getMyHitPoints();
+                long tempHP = CharacterData.getHit_points();
                 tempHP -=100;
 
-                if(tempHP > CharacterData.getMyMaxHitPoints()) {
-                    tempHP = CharacterData.getMyMaxHitPoints();
+                if(tempHP > CharacterData.getMax_hit_points()) {
+                    tempHP = CharacterData.getMax_hit_points();
                 } else if(tempHP < 0) {
                     tempHP = 0;
                 }
 
-                String text = "myHitPoints: " + tempHP + "/" + CharacterData.getMyMaxHitPoints();
-                CharacterData.setMyHitPoints(tempHP);
+                String text = "HP: " + tempHP + "/" + CharacterData.getMax_hit_points();
+
+                playSound("smack.wav");
+
+                CharacterData.setHit_points(tempHP);
                 characterHP.setText(text);
             }
         });
 
+        check = (CheckBox) v.findViewById(R.id.checkBox);
+        check.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //is chkIos checked?
+                if (((CheckBox) v).isChecked()) {
+                    playSound("character_sound.mid");
+                } else {
+                    mp.stop();
+                }
+
+            }
+        });
+
         return v;
+    }
+
+    public void playSound(String fileName) {
+
+        //String fileName = "";
+        AssetFileDescriptor afd = null;
+
+        try{
+            afd = getActivity().getAssets().openFd(fileName);
+        } catch(IOException e) {
+            Log.i("Error", "Assets file I/O Error");
+        }
+
+        mp = new MediaPlayer();
+        try{
+            mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(),afd.getLength());
+            mp.prepare();
+            mp.start();
+        } catch (IOException e) {
+            Log.i("Error", "Media player I/O Exception");
+        }
     }
 
     @Override
@@ -93,7 +143,7 @@ public class CharacterFragment extends Fragment implements Hideable {
     public void onShowFragment() {
 
         characterHP = (TextView) getView().findViewById(R.id.characterHP);
-        String text = "myHitPoints: " + CharacterData.getMyHitPoints() + "/" + CharacterData.getMyMaxHitPoints();
+        String text = "HP: " + CharacterData.getHit_points() + "/" + CharacterData.getMax_hit_points();
         characterHP.setText(text);
     }
 

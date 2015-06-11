@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.gorgonshank.manyfragments.Battle.Enemy;
 import com.gorgonshank.manyfragments.Data.CharacterData;
+import com.gorgonshank.manyfragments.Data.Constants;
 import com.gorgonshank.manyfragments.R;
 
 import java.io.IOException;
@@ -24,27 +25,38 @@ public class BattleActivity extends ActionBarActivity{
 
     private ImageView characterPortrait;
     private ImageView enemyPortrait;
-    private Button attack, run, heal, item;
-    private TextView charHP_TextView, enemyHP_TextView, combat_text;
+    private Button attack, run, heal, special;
+    private TextView charHP_TextView, enemyHP_TextView, combat_text, skill_points_TextView;
     private ScrollView scroll;
     private MediaPlayer mp;
     private LinearLayout battle_background;
+    private LinearLayout commands;
+    private LinearLayout special_commands;
+
     private Enemy combatant;
-
-    public long character_HP, enemy_HP, character_max_HP, enemy_max_HP;
-
+    private long character_HP, enemy_HP, character_max_HP, enemy_max_HP;
     private int end = 0;
+    private String ourBarcode;
+
+    private Button skill_1, skill_2, skill_3, go_back;
+
+    private long skill_points;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_battle);
+
+        Intent activity = getIntent();
+        ourBarcode = activity.getStringExtra("barcode");
+
+        commands = (LinearLayout) findViewById(R.id.commands);
+        special_commands = (LinearLayout) findViewById(R.id.special);
 
         int Min = 0;
         int Max = 1;
         int decision = Min + (int)(Math.random() * ((Max - Min) + 1));
 
         enemyPortrait = (ImageView) findViewById(R.id.enemy);
-
 
         if(decision == 0) {
             battle_background = (LinearLayout) findViewById(R.id.battle_background);
@@ -66,13 +78,15 @@ public class BattleActivity extends ActionBarActivity{
         characterPortrait = (ImageView) findViewById(R.id.character);
         characterPortrait.setImageResource(R.drawable.fighter);
 
-
-
         charHP_TextView = (TextView) findViewById(R.id.char_HP);
-        charHP_TextView.setText("HP: " + CharacterData.getMyHitPoints() + "/" + CharacterData.getMyMaxHitPoints());
+        charHP_TextView.setText("HP: " + CharacterData.getHit_points() + "/" + CharacterData.getMax_hit_points());
 
-        character_HP = CharacterData.getMyHitPoints();
-        character_max_HP = CharacterData.getMyMaxHitPoints();
+        character_HP = CharacterData.getHit_points();
+        character_max_HP = CharacterData.getMax_hit_points();
+
+        skill_points = CharacterData.getSkill_points();
+        skill_points_TextView = (TextView) findViewById(R.id.skill_text);
+        skill_points_TextView.setText("Skill Points: " + skill_points + " / " + CharacterData.getMax_skill_points());
 
         enemyHP_TextView = (TextView) findViewById(R.id.enemy_HP);
         enemyHP_TextView.setText("Enemy: " + combatant.getHp() + "/" + combatant.getMaxHP());
@@ -90,25 +104,29 @@ public class BattleActivity extends ActionBarActivity{
                 long damage = (CharacterData.getAttack() - combatant.getDefence());
 
                 if(damage > 0) {
-                    combat_text.append("\nPlayer did " + damage + " to enemy.");
-                    scroll.smoothScrollTo(0, combat_text.getBottom());
+                    combat_text.append("Player did " + damage + " to enemy.\n");
+                    scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
                     enemy_HP -= damage;
                     playSound("sword_attack.wav");
                     if(enemy_HP < 0) {
                         enemy_HP = 0;
                     }
                 } else {
-                    combat_text.append("\nPlayer did not do damage to enemy.");
-                    scroll.smoothScrollTo(0, combat_text.getBottom());
+                    combat_text.append("Player did not do damage to enemy.\n");
+                    scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
                 }
                 enemyHP_TextView.setText("Enemy: " + enemy_HP + "/" + enemy_max_HP);
                 combatant.setHp(enemy_HP);
 
-                try{
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Log.i("Battle", "Didn't work");
+                skill_points += 1;
+
+                if(skill_points > CharacterData.getMax_skill_points()) {
+                    skill_points = CharacterData.getMax_skill_points();
                 }
+
+                skill_points_TextView.setText("Skill Points: " + skill_points + " / " + CharacterData.getMax_skill_points());
+
+                //addDelay();
 
                 checkVictoryOrLoss(combatant);
                 enemyTurn(combatant);
@@ -123,8 +141,8 @@ public class BattleActivity extends ActionBarActivity{
                 int Max = 2;
                 int decision = Min + (int)(Math.random() * ((Max - Min) + 1));
                 if(decision == 0) {
-                    combat_text.append("\nRan away.");
-                    scroll.smoothScrollTo(0, combat_text.getBottom());
+                    combat_text.append("Ran away.\n");
+                    scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
 
                     Intent mainIntent = new Intent(BattleActivity.this, MainActivity.class);
                     Toast toast = Toast.makeText(getApplicationContext(), "Ran Away" , Toast.LENGTH_LONG);
@@ -137,8 +155,9 @@ public class BattleActivity extends ActionBarActivity{
 
 
                 } else {
-                    combat_text.append("\nFailed to run away.");
-                    scroll.smoothScrollTo(0, combat_text.getBottom());
+                    combat_text.append("Failed to run away.\n");
+                    scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
+                    //addDelay();
                     enemyTurn(combatant);
                 }
             }
@@ -156,30 +175,150 @@ public class BattleActivity extends ActionBarActivity{
                     character_HP = character_max_HP;
                 }
 
-                CharacterData.setMyHitPoints(character_HP);
+                CharacterData.setHit_points(character_HP);
                 charHP_TextView.setText("HP: " + character_HP + "/" + character_max_HP);
-                combat_text.append("\nPlayer recovered " + healing + " HP.");
-                scroll.smoothScrollTo(0, combat_text.getBottom());
+                combat_text.append("Player recovered " + healing + " HP.\n");
+                scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
                 playSound("heal.mp3");
 
-                try{
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Log.i("Battle", "Didn't work");
-                }
+                //addDelay();
 
                 checkVictoryOrLoss(combatant);
                 enemyTurn(combatant);
             }
         });
 
-        item = (Button) findViewById(R.id.item_button);
-        item.setOnClickListener(new View.OnClickListener() {
+        special = (Button) findViewById(R.id.special_button);
+        special.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                commands.setVisibility(LinearLayout.GONE);
+                special_commands.setVisibility(LinearLayout.VISIBLE);
+            }
+        });
+
+        skill_1 = (Button) findViewById(R.id.Pierce);
+        skill_1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                if(skill_points >= Constants.PIERCE_COST) {
+                    long damage = (CharacterData.getAttack());
+
+                    combat_text.append("Player uses Pierce, doing " + damage + " damage ignoring defense.\n");
+                    scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
+                    enemy_HP -= damage;
+                    playSound("pierce.wav");
+                    if(enemy_HP < 0) {
+                        enemy_HP = 0;
+                    }
+                    enemyHP_TextView.setText("Enemy: " + enemy_HP + "/" + enemy_max_HP);
+                    combatant.setHp(enemy_HP);
+
+                    skill_points -= Constants.PIERCE_COST;
+                    skill_points_TextView.setText("Skill Points: " + skill_points + " / " + CharacterData.getMax_skill_points());
+
+                    //addDelay();
+
+                    checkVictoryOrLoss(combatant);
+                    enemyTurn(combatant);
+                } else {
+                    combat_text.append("Thrust skill requires: " + Constants.PIERCE_COST + " to use.\n");
+                    scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
+                }
             }
         });
+
+        skill_2 = (Button) findViewById(R.id.charge);
+        skill_2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                skill_points += Constants.CHARGE_SKILL;
+
+                playSound("charge.ogg");
+                if(skill_points > CharacterData.getMax_skill_points()) {
+                    skill_points = CharacterData.getMax_skill_points();
+                }
+
+                skill_points_TextView.setText("Skill Points: " + skill_points + " / " + CharacterData.getMax_skill_points());
+                combat_text.append("Player uses charge skill gaining " + Constants.CHARGE_SKILL + " skill points.\n");
+                scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
+
+                //addDelay();
+
+                checkVictoryOrLoss(combatant);
+                enemyTurn(combatant);
+            }
+        });
+
+        skill_3 = (Button) findViewById(R.id.super_combo);
+        skill_3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(skill_points >= Constants.SUPER_COMBO_COST) {
+                    long damage = ((CharacterData.getAttack()*5) - combatant.getDefence());
+
+                    combat_text.append("Player uses Super Combo, doing " + damage + " damage.\n");
+                    scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
+                    enemy_HP -= damage;
+                    playSound("super_combo.mp3");
+                    if(enemy_HP < 0) {
+                        enemy_HP = 0;
+                    }
+                    enemyHP_TextView.setText("Enemy: " + enemy_HP + "/" + enemy_max_HP);
+                    combatant.setHp(enemy_HP);
+
+                    skill_points -= Constants.SUPER_COMBO_COST;
+                    skill_points_TextView.setText("Skill Points: " + skill_points + " / " + CharacterData.getMax_skill_points());
+
+                    //addDelay();
+
+                    checkVictoryOrLoss(combatant);
+                    enemyTurn(combatant);
+                } else {
+                    combat_text.append("Super Combo skill requires: " + Constants.SUPER_COMBO_COST + " to use.\n");
+                    scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
+                }
+            }
+        });
+
+        go_back = (Button) findViewById(R.id.back);
+        go_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                special_commands.setVisibility(LinearLayout.GONE);
+                commands.setVisibility(LinearLayout.VISIBLE);
+            }
+        });
+
+    }
+
+    public void buttonsDeselectable() {
+        attack.setEnabled(false);
+        heal.setEnabled(false);
+        special.setEnabled(false);
+        skill_1.setEnabled(false);
+        skill_2.setEnabled(false);
+        skill_3.setEnabled(false);
+    }
+
+    public void buttonsSelectable() {
+        attack.setEnabled(true);
+        heal.setEnabled(true);
+        special.setEnabled(true);
+        skill_1.setEnabled(true);
+        skill_2.setEnabled(true);
+        skill_3.setEnabled(true);
+    }
+
+    public void addDelay() {
+        buttonsDeselectable();
+        try{
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Log.i("Battle", "Didn't work");
+        }
+        buttonsSelectable();
     }
 
     @Override
@@ -191,7 +330,24 @@ public class BattleActivity extends ActionBarActivity{
             playSound("FF6_06_Fanfare.mid");
         } else if(end == 2) {
             mp.stop();
+            playSound("down.ogg");
+            try{
+                Thread.sleep(1000);
+            } catch(InterruptedException e) {
+
+            }
+
+            playSound("laugh.wav");
+
+            try{
+                Thread.sleep(1000);
+            } catch(InterruptedException e) {
+
+            }
+
             playSound("FF6_50_Dark_World.mid");
+
+
         } else {
             mp.stop();
             playSound("run_away.mp3");
@@ -247,25 +403,25 @@ public class BattleActivity extends ActionBarActivity{
                 long damage = (combatant.getAttack() - CharacterData.getDefense());
 
                 if(damage > 0) {
-                    combat_text.append("\nEnemy did " + damage + " to player.");
-                    scroll.smoothScrollTo(0, combat_text.getBottom());
+                    combat_text.append("Enemy did " + damage + " damage to player.\n\n");
+                    scroll.fullScroll(ScrollView.FOCUS_DOWN);
                     character_HP -= damage;
                     if(character_HP < 0) {
                         character_HP = 0;
                     }
                 } else {
-                    combat_text.append("\nEnemy did not do damage to player.");
-                    scroll.smoothScrollTo(0, combat_text.getBottom());
+                    combat_text.append("Enemy did not do damage to player.\n\n");
+                    scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
                 }
                 charHP_TextView.setText("HP: " + character_HP + "/" + character_max_HP);
-                CharacterData.setMyHitPoints(character_HP);
+                CharacterData.setHit_points(character_HP);
                 playSound("damage.wav");
 
             } else if(decision == 1) {
-                combat_text.append("\nEnemy is loafing around.");
-                scroll.smoothScrollTo(0, combat_text.getBottom());
+                combat_text.append("Enemy is loafing around.\n\n");
+                scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
             } else if(decision == 2) {
-                long heal = 50;
+                long heal = 100;
                 enemy_HP = combatant.getHp();
                 enemy_HP += heal;
 
@@ -273,8 +429,8 @@ public class BattleActivity extends ActionBarActivity{
                     enemy_HP = combatant.getMaxHP();
                 }
 
-                combat_text.append("\nEnemy healed itself for " + heal + " HP.");
-                scroll.smoothScrollTo(0, combat_text.getBottom());
+                combat_text.append("Enemy healed itself for " + heal + " HP.\n\n");
+                scroll.post(new Runnable() {public void run() {scroll.fullScroll(View.FOCUS_DOWN);}   });
                 enemyHP_TextView.setText("Enemy: " + enemy_HP + "/" + enemy_max_HP);
                 combatant.setHp(enemy_HP);
                 playSound("heal.mp3");
@@ -290,7 +446,8 @@ public class BattleActivity extends ActionBarActivity{
             Intent mainIntent = new Intent(BattleActivity.this, MainActivity.class);
             mainIntent.putExtra("experience", combatant.getExperience());
             mainIntent.putExtra("loot", combatant.getLoot());
-
+            mainIntent.putExtra("passed_barcode", ourBarcode);
+            Log.i("Barcode", "This is it: " + ourBarcode);
             Toast toast = Toast.makeText(getApplicationContext(), "You win " + " loot: " + combatant.getLoot(), Toast.LENGTH_LONG);
             toast.show();
 
@@ -298,7 +455,7 @@ public class BattleActivity extends ActionBarActivity{
 
             startActivity(mainIntent);
             BattleActivity.this.finish();
-        } else if(CharacterData.getMyHitPoints() <= 0) {
+        } else if(CharacterData.getHit_points() <= 0) {
             Intent mainIntent = new Intent(BattleActivity.this, MainActivity.class);
             Toast toast = Toast.makeText(getApplicationContext(), "You lose.", Toast.LENGTH_LONG);
             toast.show();
